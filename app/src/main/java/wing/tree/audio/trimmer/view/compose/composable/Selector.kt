@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -26,15 +26,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import wing.tree.audio.trimmer.extension.ONE
-import wing.tree.audio.trimmer.extension.int
 import wing.tree.audio.trimmer.view.compose.state.SelectorState
 import wing.tree.audio.trimmer.view.roundToNearestMultipleOf
 import kotlin.math.roundToInt
@@ -75,12 +73,10 @@ fun Selector(
         Row(
             modifier = Modifier
                 .offset {
-                    offset.copy(
-                        x = offset.x.plus(state.contentPadding.toPx().int)
-                    )
+                    offset.copy(x = offset.x)
                 }
         ) {
-            Box(
+            Box( // foward handle
                 modifier = Modifier
                     .width(width = state.handleWidth)
                     .fillMaxHeight()
@@ -90,48 +86,23 @@ fun Selector(
                             topStart = 8.dp,
                             bottomStart = 8.dp
                         )
-                    )
-            )
-
-            Box(
-                modifier = Modifier
-                    .size(width = width, height = 50.dp)
-                    .border(width = state.barWidth, color = state.color.copy(alpha = 0.6f))
-                    .pointerInput(key1 = true) {
+                    ).pointerInput(key1 = true) {
                         detectDragGestures(
                             onDragCancel = {
                                 coroutineScope.launch {
-                                    val initialValue = offset.x.toFloat()
-                                    val targetValue = initialValue
-                                        .roundToNearestMultipleOf(15f)
-                                        .toFloat()
-
-                                    animate(
-                                        initialValue = initialValue,
-                                        targetValue = targetValue,
-                                    ) { value, _ ->
-                                        offset = IntOffset(
-                                            value.roundToInt(),
-                                            offset.y
-                                        )
+                                    adjustOffset(offset) { off, diff ->
+                                        offset = off
+                                        // println("wwwww111:${it.x},,,${it.x.toDp()}")
+                                        width += diff.toDp()
                                     }
                                 }
                             },
                             onDragEnd = {
                                 coroutineScope.launch {
-                                    val initialValue = offset.x.toFloat()
-                                    val targetValue = initialValue
-                                        .roundToNearestMultipleOf(15f)
-                                        .toFloat()
-
-                                    animate(
-                                        initialValue = initialValue,
-                                        targetValue = targetValue,
-                                    ) { value, _ ->
-                                        offset = IntOffset(
-                                            value.roundToInt(),
-                                            offset.y
-                                        )
+                                    adjustOffset(offset) { off, diff ->
+                                        offset = off
+                                        // println("wwwww222:${it.x},,,${it.x.toDp()}")
+                                        width += diff.toDp()
                                     }
                                 }
                             },
@@ -148,6 +119,59 @@ fun Selector(
                                             .toPx()
                                             .toInt()
                                     )
+
+                                val x = offset.x
+                                    .plus(dragAmount.x.roundToInt())
+//                                    .coerceIn(
+//                                        minimumValue = 0,
+//                                        maximumValue = maxV,
+//                                    )
+
+                                width -= dragAmount.x.roundToInt().toDp()
+
+                                offset = IntOffset(
+                                    x,
+                                    offset.y
+                                )
+                            }
+                        )
+                    }
+            )
+
+            Box( // 셀렉터 바디.
+                modifier = Modifier
+                    .size(width = width, height = 50.dp)
+                    .border(width = state.barWidth, color = state.color.copy(alpha = 0.6f))
+                    .pointerInput(key1 = true) {
+                        detectDragGestures(
+                            onDragCancel = {
+                                coroutineScope.launch {
+                                    adjustOffset(offset) { off, _ ->
+                                        offset = off
+                                    }
+                                }
+                            },
+                            onDragEnd = {
+                                coroutineScope.launch {
+                                    adjustOffset(offset) { off, _ ->
+                                        offset = off
+                                    }
+                                }
+                            },
+                            onDrag = { change, dragAmount ->
+                                change.consume()
+
+                                if (isPlaying) return@detectDragGestures
+
+                                val maxV = maxWidth
+                                    .toPx()
+                                    .toInt()
+//                                    .toInt()
+//                                    .minus(
+//                                        width
+//                                            .toPx()
+//                                            .toInt()
+//                                    )
 
                                 val x = offset.x
                                     .plus(dragAmount.x)
@@ -165,14 +189,15 @@ fun Selector(
                         )
                     }
                     .drawWithContent {
-                        drawContent()
-
-                        drawLine(
-                            color = Color.DarkGray,
-                            start = Offset(panim, 0f),
-                            end = Offset(panim, size.height),
-                            strokeWidth = state.barWidth.toPx()
-                        )
+                        // TODO draw playbar.
+//                        drawContent()
+//
+//                        drawLine(
+//                            color = Color.DarkGray,
+//                            start = Offset(panim, 0f),
+//                            end = Offset(panim, size.height),
+//                            strokeWidth = state.barWidth.toPx()
+//                        )
                     }
             ) {
                 with(LocalDensity.current) {
@@ -180,7 +205,7 @@ fun Selector(
                 }
             }
 
-            Box(
+            Box( // backward handle
                 modifier = Modifier
                     .width(width = state.handleWidth)
                     .fillMaxHeight()
@@ -193,39 +218,16 @@ fun Selector(
                     ).pointerInput(key1 = true) {
                         detectDragGestures(
                             onDragCancel = {
-                                // 동일한 정확도의 width 조정 필요.
                                 coroutineScope.launch {
-                                    val initialValue = offset.x.toFloat()
-                                    val targetValue = initialValue
-                                        .roundToNearestMultipleOf(15f)
-                                        .toFloat()
-
-                                    animate(
-                                        initialValue = initialValue,
-                                        targetValue = targetValue,
-                                    ) { value, _ ->
-                                        offset = IntOffset(
-                                            value.roundToInt(),
-                                            offset.y
-                                        )
+                                    adjustWidth(width) {
+                                        width = it.minus(state.space)
                                     }
                                 }
                             },
                             onDragEnd = {
                                 coroutineScope.launch {
-                                    val initialValue = offset.x.toFloat()
-                                    val targetValue = initialValue
-                                        .roundToNearestMultipleOf(15f)
-                                        .toFloat()
-
-                                    animate(
-                                        initialValue = initialValue,
-                                        targetValue = targetValue,
-                                    ) { value, _ ->
-                                        offset = IntOffset(
-                                            value.roundToInt(),
-                                            offset.y
-                                        )
+                                    adjustWidth(width) {
+                                        width = it.minus(state.space)
                                     }
                                 }
                             },
@@ -243,21 +245,39 @@ fun Selector(
                                             .toInt()
                                     )
 
-                                val x = offset.x
-                                    .plus(dragAmount.x)
-                                    .roundToInt()
-//                                    .coerceIn(
-//                                        minimumValue = 0,
-//                                        maximumValue = maxV,
-//                                    )
-
-                                width += x.toDp()
+                                width += dragAmount.x.toDp()
                             }
                         )
                     }
             )
         }
+    }
+}
 
+suspend fun Density.adjustWidth(width: Dp, block: (Dp) -> Unit) {
+    val initialValue = width.toPx()
+    val targetValue = initialValue
+        .roundToNearestMultipleOf(15f)
+        .toFloat()
 
+    animate(
+        initialValue = initialValue,
+        targetValue = targetValue,
+    ) { value, _ ->
+        block(value.toDp())
+    }
+}
+
+suspend fun Density.adjustOffset(offset: IntOffset, block: (IntOffset, Float) -> Unit) {
+    val initialValue = offset.x.toFloat()
+    val targetValue = initialValue
+        .roundToNearestMultipleOf(15f)
+        .toFloat()
+
+    animate(
+        initialValue = initialValue,
+        targetValue = targetValue,
+    ) { value, _ ->
+        block(offset.copy(x = value.roundToInt()), targetValue.minus(value))
     }
 }
