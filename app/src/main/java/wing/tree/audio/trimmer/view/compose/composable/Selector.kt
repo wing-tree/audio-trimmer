@@ -90,19 +90,21 @@ fun Selector(
                         detectDragGestures(
                             onDragCancel = {
                                 coroutineScope.launch {
-                                    adjustOffset(offset) { off, diff ->
+                                    adjustOffset(offset) { off ->
+                                        val offDiff = offset.x - off.x
                                         offset = off
                                         // println("wwwww111:${it.x},,,${it.x.toDp()}")
-                                        width += diff.toDp()
+                                        width += offDiff.toDp()
                                     }
                                 }
                             },
                             onDragEnd = {
                                 coroutineScope.launch {
-                                    adjustOffset(offset) { off, diff ->
+                                    adjustOffset(offset) { off ->
+                                        val offDiff = offset.x - off.x
                                         offset = off
                                         // println("wwwww222:${it.x},,,${it.x.toDp()}")
-                                        width += diff.toDp()
+                                        width += offDiff.toDp()
                                     }
                                 }
                             },
@@ -146,14 +148,14 @@ fun Selector(
                         detectDragGestures(
                             onDragCancel = {
                                 coroutineScope.launch {
-                                    adjustOffset(offset) { off, _ ->
+                                    adjustOffset(offset) { off ->
                                         offset = off
                                     }
                                 }
                             },
                             onDragEnd = {
                                 coroutineScope.launch {
-                                    adjustOffset(offset) { off, _ ->
+                                    adjustOffset(offset) { off ->
                                         offset = off
                                     }
                                 }
@@ -268,7 +270,7 @@ suspend fun Density.adjustWidth(width: Dp, block: (Dp) -> Unit) {
     }
 }
 
-suspend fun Density.adjustOffset(offset: IntOffset, block: (IntOffset, Float) -> Unit) {
+suspend fun Density.adjustOffset(offset: IntOffset, block: (IntOffset) -> Unit) {
     val initialValue = offset.x.toFloat()
     val targetValue = initialValue
         .roundToNearestMultipleOf(15f)
@@ -278,6 +280,7 @@ suspend fun Density.adjustOffset(offset: IntOffset, block: (IntOffset, Float) ->
         initialValue = initialValue,
         targetValue = targetValue,
     ) { value, _ ->
-        block(offset.copy(x = value.roundToInt()), targetValue.minus(value))
+        val intValue = value.roundToInt()
+        block(offset.copy(x = intValue))
     }
 }
