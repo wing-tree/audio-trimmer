@@ -70,6 +70,8 @@ class AudioTrimmerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val handleWidth = 16.dp
+
         setContent {
             val coroutineScope = rememberCoroutineScope()
             val state = viewModel.ace.collectAsStateWithLifecycle()
@@ -95,7 +97,9 @@ class AudioTrimmerActivity : ComponentActivity() {
             val trimmedFile = viewModel.trimmedFile.collectAsStateWithLifecycle()
 
             val selectorState = remember {
-                SelectorState()
+                SelectorState(
+                    handleWidth = handleWidth
+                )
             }
 
             val trimAce = viewModel.trimAce.collectAsStateWithLifecycle()
@@ -160,7 +164,7 @@ class AudioTrimmerActivity : ComponentActivity() {
                                 .height(50.dp)
                                 .background(Color.Cyan),
                             state = lazyListState,
-                            contentPadding = PaddingValues(2.dp),
+                            contentPadding = PaddingValues(horizontal = handleWidth, vertical = 10.dp),
                             horizontalArrangement = Arrangement.spacedBy(2.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
