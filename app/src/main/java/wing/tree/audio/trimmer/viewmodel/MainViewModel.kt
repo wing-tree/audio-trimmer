@@ -19,15 +19,16 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import wing.tree.audio.trimmer.AudioFileLoader
-import wing.tree.audio.trimmer.data.model.AudioFile
 import wing.tree.audio.trimmer.extension.ZERO
 import wing.tree.audio.trimmer.extension.long
+import wing.tree.audio.trimmer.model.AudioFile
 import wing.tree.audio.trimmer.ui.state.MainUiState
 import wing.tree.audio.trimmer.ui.state.MainUiState.AudioFiles
 import wing.tree.audio.trimmer.ui.state.MainUiState.ControlsState
 import wing.tree.audio.trimmer.view.compose.state.PlayerState
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+    private val expanded = MutableStateFlow<AudioFile?>(null)
     private val listener: Player.Listener = object : Player.Listener {
         @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
         override fun onPlaybackStateChanged(playbackState: Int) {
@@ -133,14 +134,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var job: Job? = null
 
     val uiState = combine(
+        controlsState,
         sourceState,
         trimmedState,
-        controlsState,
-    ) { sourceState, trimmedState, controlsState ->
+        expanded
+    ) { controlsState, sourceState, trimmedState, expanded ->
         MainUiState(
+            controlsState = controlsState,
             sourceState = sourceState,
             trimmedState = trimmedState,
-            controlsState = controlsState,
+            expanded = expanded,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -159,6 +162,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         super.onCleared()
     }
 
+    fun collapse() {
+        expanded.value = null
+    }
+
+    fun expand(audioFile: AudioFile) {
+        expanded.value = audioFile
+    }
+
     fun load() {
         viewModelScope.launch {
             launch {
@@ -173,7 +184,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val audioFiles = withContext(ioDispatcher) {
                     audioFileLoader.trimmedAudioFiles.toImmutableList()
                 }
-                println("hhhhhhhh:${audioFiles.map { it.displayName }}")
+
                 trimmedState.value = AudioFiles.TrimmedState.Content(audioFiles = audioFiles)
             }
         }

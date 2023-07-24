@@ -1,6 +1,5 @@
 package wing.tree.audio.trimmer.extension
 
-import wing.tree.audio.trimmer.data.extension.isZero
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.HOURS
@@ -34,3 +33,5 @@ val Long.format: String
             )
         }
     }
+
+fun Long.isZero() = this == Long.ZERO

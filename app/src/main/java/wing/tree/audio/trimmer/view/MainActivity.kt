@@ -29,11 +29,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import wing.tree.audio.trimmer.R
-import wing.tree.audio.trimmer.data.model.AudioFile
-import wing.tree.audio.trimmer.data.model.AudioFile.Companion.EXTRA_AUDIO_FILE
 import wing.tree.audio.trimmer.extension.EMPTY
 import wing.tree.audio.trimmer.extension.ZERO
 import wing.tree.audio.trimmer.extension.composable
+import wing.tree.audio.trimmer.extension.shareAudio
+import wing.tree.audio.trimmer.model.AudioFile
+import wing.tree.audio.trimmer.model.AudioFile.Companion.EXTRA_AUDIO_FILE
 import wing.tree.audio.trimmer.model.Route
 import wing.tree.audio.trimmer.ui.state.MainUiState.ControlsState
 import wing.tree.audio.trimmer.ui.theme.AudioTrimmerTheme
@@ -171,6 +172,7 @@ class MainActivity : ComponentActivity() {
                         composable(Route.SOURCE) {
                             Source(
                                 state = uiState.sourceState,
+                                expanded = uiState.expanded,
                                 onItemClick = onItemClick,
                                 modifier = Modifier.fillMaxSize(),
                             )
@@ -179,6 +181,7 @@ class MainActivity : ComponentActivity() {
                         composable(Route.TRIMMED) {
                             Trimmed(
                                 state = uiState.trimmedState,
+                                expanded = uiState.expanded,
                                 onItemClick = onItemClick,
                                 modifier = Modifier.fillMaxSize(),
                             )
@@ -203,8 +206,11 @@ class MainActivity : ComponentActivity() {
 
     private val onItemClick: (AudioFile.Action) -> Unit = { action ->
         when (action) {
+            is AudioFile.Action.Collapse -> viewModel.collapse()
+            is AudioFile.Action.Expand -> viewModel.expand(action.audioFile)
             is AudioFile.Action.Pause -> viewModel.pause()
             is AudioFile.Action.Play -> viewModel.play(action.audioFile)
+            is AudioFile.Action.Share -> shareAudio(action.audioFile.uri)
             is AudioFile.Action.Trim -> {
                 startActivity(
                     Intent(

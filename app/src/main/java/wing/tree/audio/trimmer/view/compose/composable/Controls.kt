@@ -28,10 +28,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import wing.tree.audio.trimmer.R
-import wing.tree.audio.trimmer.data.constant.ZERO
-import wing.tree.audio.trimmer.data.extension.float
 import wing.tree.audio.trimmer.extension.EMPTY
 import wing.tree.audio.trimmer.extension.ONE
+import wing.tree.audio.trimmer.extension.ZERO
 import wing.tree.audio.trimmer.extension.float
 import wing.tree.audio.trimmer.extension.format
 import wing.tree.audio.trimmer.ui.state.MainUiState.ControlsState
@@ -126,7 +125,7 @@ fun Controls(
                     onValueChange(currentPosition)
                 },
                 modifier = Modifier.fillMaxWidth(),
-                valueRange = ZERO.float..state.duration.toFloat(),
+                valueRange = Float.ZERO..state.duration.float,
                 onValueChangeFinished = {
                     onValueChangeFinished(currentPosition)
                 }

@@ -1,13 +1,11 @@
-package wing.tree.audio.trimmer.data.model
+package wing.tree.audio.trimmer.model
 
 import android.net.Uri
 import android.os.Parcelable
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import wing.tree.audio.trimmer.data.extension.isZero
-import java.util.concurrent.TimeUnit.HOURS
-import java.util.concurrent.TimeUnit.MILLISECONDS
-import java.util.concurrent.TimeUnit.MINUTES
+import wing.tree.audio.trimmer.extension.float
+import wing.tree.audio.trimmer.extension.isZero
+import java.util.concurrent.TimeUnit
 
 @Parcelize
 data class AudioFile(
@@ -24,15 +22,15 @@ data class AudioFile(
     @Parcelize
     value class Duration(val value: Long) : Parcelable {
         override fun toString(): String {
-            val hours = MILLISECONDS.toHours(value)
-            val minutes = MILLISECONDS
+            val hours = TimeUnit.MILLISECONDS.toHours(value)
+            val minutes = TimeUnit.MILLISECONDS
                 .toMinutes(value)
-                .minus(HOURS.toMinutes(hours))
+                .minus(TimeUnit.HOURS.toMinutes(hours))
 
-            val seconds = MILLISECONDS
+            val seconds = TimeUnit.MILLISECONDS
                 .toSeconds(value)
-                .minus(HOURS.toSeconds(hours))
-                .minus(MINUTES.toSeconds(minutes))
+                .minus(TimeUnit.HOURS.toSeconds(hours))
+                .minus(TimeUnit.MINUTES.toSeconds(minutes))
 
             return if (hours.isZero()) {
                 String.format(
@@ -50,14 +48,17 @@ data class AudioFile(
             }
         }
 
-        val float: Float get() = value.toFloat() // TODO, move to app module, apply ext.
+        val float: Float get() = value.float
     }
 
     sealed interface Action {
         val audioFile: AudioFile
 
+        data class Collapse(override val audioFile: AudioFile) : Action
+        data class Expand(override val audioFile: AudioFile) : Action
         data class Pause(override val audioFile: AudioFile) : Action
         data class Play(override val audioFile: AudioFile) : Action
+        data class Share(override val audioFile: AudioFile) : Action
         data class Trim(override val audioFile: AudioFile) : Action
     }
 

@@ -1,13 +1,14 @@
 package wing.tree.audio.trimmer.ui.state
 
 import kotlinx.collections.immutable.ImmutableList
-import wing.tree.audio.trimmer.data.model.AudioFile
+import wing.tree.audio.trimmer.model.AudioFile
 import wing.tree.audio.trimmer.view.compose.state.PlayerState
 
 data class MainUiState(
+    val controlsState: ControlsState,
     val sourceState: AudioFiles.SourceState,
     val trimmedState: AudioFiles.TrimmedState,
-    val controlsState: ControlsState,
+    val expanded: AudioFile? = null
 ) {
     sealed interface AudioFiles {
         sealed interface SourceState {

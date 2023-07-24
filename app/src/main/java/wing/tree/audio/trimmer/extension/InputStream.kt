@@ -17,26 +17,30 @@ fun InputStream.toFile(context: Context): File? {
 }
 
 @Synchronized
-@Throws(IOException::class)
 private fun getByteArrayFromInputStream(inputStream: InputStream): ByteArray? {
-    val os = ByteArrayOutputStream()
+    val byteArrayOutputStream = ByteArrayOutputStream()
     val buffer = ByteArray(0xFFFF)
+
     var len = inputStream.read(buffer)
-    while (len != -1) {
-        os.write(buffer, 0, len)
+
+    while (len > Int.NEGATIVE_ONE) {
+        byteArrayOutputStream.write(buffer, Int.ZERO, len)
         len = inputStream.read(buffer)
     }
-    return os.toByteArray()
+
+    return byteArrayOutputStream.toByteArray()
 }
 
 @Synchronized
-fun getByteArrayFile(context: Context, audioByteArray: ByteArray?): File? {
-    val cache = context.externalCacheDir?.path + File.separator
-    val temp = File(cache, Arrays.hashCode(audioByteArray).toString())
+private fun getByteArrayFile(context: Context, audioByteArray: ByteArray?): File? {
+    val parent = "${context.externalCacheDir?.path}${File.separator}"
+    val file = File(parent, "${Arrays.hashCode(audioByteArray)}")
+
     try {
-        FileOutputStream(temp).use { outputStream ->
+        FileOutputStream(file).use { outputStream ->
             outputStream.write(audioByteArray)
-            return temp
+
+            return file
         }
     } catch (ignored: IOException) {
         return null

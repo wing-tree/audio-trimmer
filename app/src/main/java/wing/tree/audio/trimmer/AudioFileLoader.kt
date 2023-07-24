@@ -7,9 +7,9 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.core.database.getLongOrNull
-import wing.tree.audio.trimmer.data.constant.ZERO
-import wing.tree.audio.trimmer.data.extension.long
-import wing.tree.audio.trimmer.data.model.AudioFile
+import wing.tree.audio.trimmer.extension.ZERO
+import wing.tree.audio.trimmer.extension.long
+import wing.tree.audio.trimmer.model.AudioFile
 
 class AudioFileLoader(private val context: Context) {
     private val mediaMetadataRetriever = MediaMetadataRetriever()
@@ -28,9 +28,9 @@ class AudioFileLoader(private val context: Context) {
                 AudioFile(
                     id = index.long,
                     displayName = file.name,
-                    duration = AudioFile.Duration(duration ?: ZERO.long),
+                    duration = AudioFile.Duration(duration ?: Long.ZERO),
                     size = size,
-                    uri = Uri.parse(file.path),
+                    uri = Uri.fromFile(file)
                 )
             } else {
                 null

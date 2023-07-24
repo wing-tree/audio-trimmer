@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import wing.tree.audio.trimmer.AudioTrimmer
 import wing.tree.audio.trimmer.AudioTrimmerApplication
-import wing.tree.audio.trimmer.data.model.AudioFile
 import wing.tree.audio.trimmer.extension.toFile
+import wing.tree.audio.trimmer.model.AudioFile
 import java.io.File
 
 class AudioTrimmerViewModel(
