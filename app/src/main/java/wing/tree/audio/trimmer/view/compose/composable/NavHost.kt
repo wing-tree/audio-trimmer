@@ -14,10 +14,10 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.createGraph
-import wing.tree.audio.trimmer.data.constant.SEVEN
+import wing.tree.audio.trimmer.extension.SEVEN
 import wing.tree.audio.trimmer.extension.hundreds
 
-private val animationSpec = tween<Float>(durationMillis = SEVEN.hundreds)
+private val animationSpec = tween<Float>(durationMillis = Int.SEVEN.hundreds)
 
 @Composable
 fun NavHost(

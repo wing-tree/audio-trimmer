@@ -4,9 +4,9 @@ import android.app.Application
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
-import wing.tree.audio.trimmer.data.constant.ZERO
-import wing.tree.audio.trimmer.data.extension.long
-import wing.tree.audio.trimmer.data.model.AudioFile
+import wing.tree.audio.trimmer.extension.ZERO
+import wing.tree.audio.trimmer.extension.long
+import wing.tree.audio.trimmer.model.AudioFile
 
 class TrimmedViewModel(application: Application) : AndroidViewModel(application = application) {
     fun load() {
@@ -24,7 +24,7 @@ class TrimmedViewModel(application: Application) : AndroidViewModel(application 
                 AudioFile(
                     id = index.long,
                     displayName = file.name,
-                    duration = AudioFile.Duration(duration ?: ZERO.long),
+                    duration = AudioFile.Duration(duration ?: Long.ZERO),
                     size = size,
                     uri = Uri.parse(file.path),
                 )

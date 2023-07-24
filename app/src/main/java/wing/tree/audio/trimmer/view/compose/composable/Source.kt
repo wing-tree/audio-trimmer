@@ -6,24 +6,21 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DividerDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import wing.tree.audio.trimmer.data.model.AudioFile
 import wing.tree.audio.trimmer.extension.EMPTY
+import wing.tree.audio.trimmer.model.AudioFile
 import wing.tree.audio.trimmer.ui.state.MainUiState.AudioFiles.SourceState
 
 @Composable
 fun Source(
     state: SourceState,
+    expanded: AudioFile?,
     onItemClick: (AudioFile.Action) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -44,6 +41,7 @@ fun Source(
             }
 
             is SourceState.Content -> LazyColumn(modifier = Modifier.fillMaxSize()) {
+                println("mmmmmmmmmmmm$expanded")
                 itemsIndexed(
                     items = it.audioFiles,
                     key = { _, item ->
@@ -52,6 +50,7 @@ fun Source(
                 ) { index, item ->
                     AudioFile(
                         audioFile = item,
+                        expanded = item.id == expanded?.id,
                         onClick = onItemClick,
                     )
 
