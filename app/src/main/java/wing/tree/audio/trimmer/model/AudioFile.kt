@@ -12,6 +12,7 @@ data class AudioFile(
     val id: Long,
     val displayName: String,
     val duration: Duration,
+    val mimeType: String,
     val size: Long,
     val uri: Uri,
     val albumArt: Uri? = null,

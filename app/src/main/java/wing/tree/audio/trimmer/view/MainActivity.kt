@@ -32,7 +32,7 @@ import wing.tree.audio.trimmer.R
 import wing.tree.audio.trimmer.extension.EMPTY
 import wing.tree.audio.trimmer.extension.ZERO
 import wing.tree.audio.trimmer.extension.composable
-import wing.tree.audio.trimmer.extension.shareAudio
+import wing.tree.audio.trimmer.extension.shareAudioFile
 import wing.tree.audio.trimmer.model.AudioFile
 import wing.tree.audio.trimmer.model.AudioFile.Companion.EXTRA_AUDIO_FILE
 import wing.tree.audio.trimmer.model.Route
@@ -210,7 +210,7 @@ class MainActivity : ComponentActivity() {
             is AudioFile.Action.Expand -> viewModel.expand(action.audioFile)
             is AudioFile.Action.Pause -> viewModel.pause()
             is AudioFile.Action.Play -> viewModel.play(action.audioFile)
-            is AudioFile.Action.Share -> shareAudio(action.audioFile.uri)
+            is AudioFile.Action.Share -> shareAudioFile(action.audioFile)
             is AudioFile.Action.Trim -> {
                 startActivity(
                     Intent(

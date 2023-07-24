@@ -2,14 +2,14 @@ package wing.tree.audio.trimmer.extension
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
+import wing.tree.audio.trimmer.model.AudioFile
 
-fun Activity.shareAudio(uri: Uri) {
+fun Activity.shareAudioFile(audioFile: AudioFile) {
     val share = Intent(Intent.ACTION_SEND).apply {
-        type = "audio/*"
+        type = audioFile.mimeType
 
-        putExtra(Intent.EXTRA_STREAM, uri)
+        putExtra(Intent.EXTRA_STREAM, audioFile.uri)
     }
 
-    startActivity(Intent.createChooser(share, "Share Sound File"))
+    startActivity(Intent.createChooser(share, null))
 }
