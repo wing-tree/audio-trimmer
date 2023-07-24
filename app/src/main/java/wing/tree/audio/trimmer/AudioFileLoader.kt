@@ -30,7 +30,7 @@ class AudioFileLoader(private val context: Context) {
                     displayName = file.name,
                     duration = AudioFile.Duration(duration ?: Long.ZERO),
                     size = size,
-                    uri = Uri.parse(file.path),
+                    uri = Uri.fromFile(file)
                 )
             } else {
                 null

@@ -42,7 +42,7 @@ fun Trimmed(
                     AudioFile(
                         audioFile = item,
                         expanded = item.id == expanded?.id,
-                        onClick = onItemClick,
+                        onClick = onItemClick
                     )
 
                     if (index < it.audioFiles.lastIndex) {

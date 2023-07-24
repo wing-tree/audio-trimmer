@@ -58,6 +58,7 @@ data class AudioFile(
         data class Expand(override val audioFile: AudioFile) : Action
         data class Pause(override val audioFile: AudioFile) : Action
         data class Play(override val audioFile: AudioFile) : Action
+        data class Share(override val audioFile: AudioFile) : Action
         data class Trim(override val audioFile: AudioFile) : Action
     }
 

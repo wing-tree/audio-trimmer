@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -105,6 +106,17 @@ fun AudioFile(
                 ) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
+                        contentDescription = null
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        onClick(AudioFile.Action.Share(audioFile))
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
                         contentDescription = null
                     )
                 }
